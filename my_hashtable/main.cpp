@@ -1,8 +1,10 @@
 #include <iostream>
 #include <algorithm>
 #include <functional>
+#include <string>
 
 using namespace std;
+
 namespace containers
 {
 	template <class Value> class BinaryTreeNode
@@ -13,6 +15,12 @@ namespace containers
 		{
 			this->leftChild = nullptr;
 			this->rightChild = nullptr;
+		}
+
+		~BinaryTreeNode()
+		{
+			delete this->leftChild;
+			delete this->rightChild;
 		}
 
 		void addChild(BinaryTreeNode* node)
@@ -50,11 +58,10 @@ namespace containers
 				return 0;
 		}
 
-	public:
+	private:
 		BinaryTreeNode* leftChild;
 		BinaryTreeNode* rightChild;
 
-	private:
 		size_t key;
 		Value value;
 
@@ -67,6 +74,11 @@ namespace containers
 		{
 			size_t hashedKey = hash<Key>{}(firstKey);
 			this->root = new BinaryTreeNode<Value>(hashedKey, firstValue);
+		}
+
+		~BinaryTree()
+		{
+			delete this->root;
 		}
 
 		void push(Key key, Value value)
@@ -88,19 +100,32 @@ namespace containers
 	template <class Key, class Value> class HashTable
 	{
 	public:
+		HashTable() { }
 		HashTable(Key firstKey, Value firstValue)
 		{
 			this->binTree = new BinaryTree<Key, Value>(firstKey, firstValue);
 		}
+		
+		~HashTable()
+		{
+			if(this->binTree != nullptr)
+				delete this->binTree;
+		}
 
 		void insert(Key key, Value value)
 		{
-			binTree->push(key, value);
+			if (this->binTree == nullptr)
+				binTree = new BinaryTree<Key, Value>(key, value);
+			else
+				binTree->push(key, value);
 		}
 
 		Value get(Key key)
 		{
-			return binTree->get(key);
+			if (binTree == nullptr)
+				return Value();
+			else
+				return binTree->get(key);
 		}
 
 	private:
@@ -112,8 +137,10 @@ using containers::HashTable;
 
 int main()
 {
-	HashTable<std::string, int> ht("one", 1);
-	ht.insert("one", 2);
-	ht.insert("three", 3);
-	cout << ht.get("one") << endl;
+	HashTable<std::string, int> ht;
+
+	for (int i = 1; i < 1000000; i++)
+		ht.insert(to_string(i), i);
+
+	cout << ht.get("12") << endl;
 }
