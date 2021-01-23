@@ -113,7 +113,7 @@ using containers::HashTable;
 int main()
 {
 	HashTable<std::string, int> ht("one", 1);
-	ht.insert("two", 2);
+	ht.insert("one", 2);
 	ht.insert("three", 3);
-	cout << ht.get("three") << endl;
+	cout << ht.get("one") << endl;
 }
