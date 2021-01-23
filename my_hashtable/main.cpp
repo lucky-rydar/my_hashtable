@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <functional>
 #include <string>
+#include <map>
+#include <chrono>
 
 using namespace std;
 
@@ -138,9 +140,28 @@ using containers::HashTable;
 int main()
 {
 	HashTable<std::string, int> ht;
+	map<std::string, int> map;
 
-	for (int i = 1; i < 1000000; i++)
+	for (int i = 1; i < 100000; i++)
+	{
+		map[to_string(i)] = i;
 		ht.insert(to_string(i), i);
+	}
 
-	cout << ht.get("12") << endl;
+	{
+		auto begin = chrono::steady_clock::now();
+		for (size_t i = 0; i < 100000; i++)
+			map["12"];
+		
+		cout << "map: " << (double)chrono::duration_cast<chrono::nanoseconds>(chrono::steady_clock::now() - begin).count() / 100000 << endl;
+	}
+
+	{
+		auto begin = chrono::steady_clock::now();
+		for (size_t i = 0; i < 100000; i++)
+			ht.get("12");
+		cout << "ht: " << (double)chrono::duration_cast<chrono::nanoseconds>(chrono::steady_clock::now() - begin).count() / 100000 << endl;
+	}
+	
+	system("pause");
 }
